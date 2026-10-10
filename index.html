@@ -1,71 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>0 to Shipped — Resume Parser</title>
-  <link rel="stylesheet" href="style.css" />
-</head>
-<body>
-  <nav class="nav">
-    <span class="logo">0 → Shipped</span>
-    <span class="nav-sub">Resume Parser</span>
-  </nav>
-
-  <main class="wrap">
-    <section class="hero">
-      <h1>Upload a resume.<br />Get an instant score.</h1>
-      <p>See the score, the skills that are present, and the ones that are missing — all on one page.</p>
-    </section>
-
-    <!-- Upload card -->
-    <section class="card upload-card" id="uploadCard">
-      <div class="dropzone" id="dropzone">
-        <div class="drop-icon">📄</div>
-        <p>Drag &amp; drop your resume here</p>
-        <label class="btn" for="fileInput">Choose PDF</label>
-        <input type="file" id="fileInput" accept=".pdf" hidden />
-        <p class="hint">Mock build — any PDF works, results are sample data.</p>
-        <p class="error" id="errorText" hidden>That's not a PDF — choose a .pdf file.</p>
-      </div>
-
-      <div class="analyzing" id="analyzing" hidden>
-        <div class="spinner"></div>
-        <p id="analyzingText">Analyzing…</p>
-      </div>
-    </section>
-
-    <!-- Result card -->
-    <section class="card result" id="resultCard" hidden>
-      <div class="score-row">
-        <svg class="ring" width="120" height="120" viewBox="0 0 120 120" aria-hidden="true">
-          <circle class="ring-bg" cx="60" cy="60" r="52"></circle>
-          <circle class="ring-fg" id="ringFg" cx="60" cy="60" r="52"></circle>
-          <text class="ring-text" id="scoreText" x="60" y="60">0</text>
-        </svg>
-        <div>
-          <h2>Resume score</h2>
-          <p class="muted" id="scoreLabel"></p>
-        </div>
-      </div>
-
-      <div class="skill-cols">
-        <div class="col present">
-          <h3>Skills present</h3>
-          <div class="chips" id="presentChips"></div>
-        </div>
-        <div class="col missing">
-          <h3>Skills missing</h3>
-          <div class="chips" id="missingChips"></div>
-        </div>
-      </div>
-
-      <button class="btn ghost" id="resetBtn">Analyze another resume</button>
-    </section>
-  </main>
-
-  <footer class="footer">0 to Shipped Resume Parser · mock build, no backend</footer>
-
-  <script src="script.js"></script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>0 to Shipped — Resume Parser</title>
+  </head>
+  <body>
+    <!-- React mounts everything below this -->
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
 </html>
