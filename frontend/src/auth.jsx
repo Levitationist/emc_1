@@ -1,6 +1,6 @@
 import { createContext, useContext, useState } from "react";
 
-const API = "http://localhost:3000";
+const API = import.meta.env.VITE_API_URL || "http://localhost:3000";
 const AuthContext = createContext(null);
 
 // Holds the JWT in localStorage so a refresh keeps you logged in,
