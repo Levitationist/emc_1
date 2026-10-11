@@ -129,6 +129,32 @@ body {
   to { transform: rotate(360deg); }
 }
 
+.jd-label {
+  display: block;
+  text-align: left;
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 18px;
+  margin-bottom: 6px;
+}
+
+.jd-textarea {
+  width: 100%;
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font: inherit;
+  font-size: 14px;
+  resize: vertical;
+}
+
+.jd-textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
 /* --- buttons --- */
 .btn {
   display: inline-block;
@@ -146,6 +172,11 @@ body {
 
 .btn:hover {
   filter: brightness(1.1);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .btn.ghost {

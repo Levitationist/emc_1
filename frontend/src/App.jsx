@@ -1,58 +1,63 @@
 import { useState, useRef } from "react";
 
-const SAMPLE_RESULTS = [
-  {
-    score: 78,
-    label: "Good — a few key skills are missing",
-    present: ["JavaScript", "HTML", "CSS", "Git", "REST APIs", "SQL"],
-    missing: ["Docker", "CI/CD", "TypeScript"],
-  },
-  {
-    score: 54,
-    label: "Fair — solid basics, gaps in tooling",
-    present: ["Python", "SQL", "Git"],
-    missing: ["React", "Docker", "AWS", "Testing"],
-  },
-  {
-    score: 91,
-    label: "Strong — ship-ready",
-    present: ["JavaScript", "TypeScript", "React", "Node.js", "Docker", "CI/CD", "SQL"],
-    missing: ["Kubernetes"],
-  },
-];
-
 // matches r="52" in the SVG below
 const RING_LENGTH = 2 * Math.PI * 52;
 
 export default function App() {
   // "idle" -> "analyzing" -> "result"
   const [phase, setPhase] = useState("idle");
-  const [error, setError] = useState(false);
+  const [error, setError] = useState(false); // resume is not a PDF
+  const [jd, setJd] = useState("");
+  const [jdError, setJdError] = useState(false); // JD left empty
+  const [apiError, setApiError] = useState(null); // backend unreachable / failed
   const [result, setResult] = useState(null);
   const [fileName, setFileName] = useState("");
   const [dragover, setDragover] = useState(false);
   const fileInputRef = useRef(null);
 
-  function handleFile(file) {
+  // sends the resume file + JD text to the backend, shows what it returns
+  async function analyze(file) {
     if (!file.name.toLowerCase().endsWith(".pdf")) {
       setError(true);
       return;
     }
+    if (!jd.trim()) {
+      setJdError(true);
+      return;
+    }
     setError(false);
+    setJdError(false);
+    setApiError(null);
     setFileName(file.name);
     setPhase("analyzing");
 
-    // the mock "parser": fake delay, then pick a sample at random
-    setTimeout(() => {
-      setResult(SAMPLE_RESULTS[Math.floor(Math.random() * SAMPLE_RESULTS.length)]);
+    try {
+      // FormData is what lets fetch send a file and fields in one request
+      const body = new FormData();
+      body.append("resume", file);
+      body.append("jd", jd);
+
+      const response = await fetch("http://localhost:3000/api/analyze", {
+        method: "POST",
+        body,
+      });
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.error || `Server error ${response.status}`);
+      }
+      setResult(await response.json());
       setPhase("result");
-    }, 1200);
+    } catch (err) {
+      setApiError(err.message);
+      setPhase("idle");
+    }
   }
 
   function reset() {
     setPhase("idle");
     setResult(null);
     setError(false);
+    setApiError(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
   }
 
@@ -78,7 +83,7 @@ export default function App() {
             <br />
             Get an instant score.
           </h1>
-          <p>See the score, the skills that are present, and the ones that are missing — all on one page.</p>
+          <p>Upload a resume and paste a job description to see the score, the skills that are present, and the ones that are missing.</p>
         </section>
 
         {phase !== "result" && (
@@ -112,8 +117,26 @@ export default function App() {
                   ref={fileInputRef}
                   onChange={(e) => e.target.files[0] && handleFile(e.target.files[0])}
                 />
-                <p className="hint">Mock build — any PDF works, results are sample data.</p>
+                <p className="hint">Analysis is a mock from the backend — real AI scoring comes later.</p>
+                <div className="jd-block">
+                  <label className="jd-label" htmlFor="jdInput">
+                    Job description
+                  </label>
+                  <textarea
+                    id="jdInput"
+                    className="jd-textarea"
+                    rows={7}
+                    placeholder="Paste the job description here…"
+                    value={jd}
+                    onChange={(e) => setJd(e.target.value)}
+                  />
+                </div>
+                <button className="btn" onClick={() => fileInputRef.current?.click()}>
+                  Choose resume PDF &amp; analyze
+                </button>
+                {jdError && <p className="error">Paste the job description first.</p>}
                 {error && <p className="error">That's not a PDF — choose a .pdf file.</p>}
+                {apiError && <p className="error">Backend error: {apiError}</p>}
               </div>
             )}
 
@@ -172,7 +195,7 @@ export default function App() {
         )}
       </main>
 
-      <footer className="footer">0 to Shipped Resume Parser · mock build, no backend</footer>
+      <footer className="footer">0 to Shipped Resume Parser · frontend + express backend, AI scoring later</footer>
     </>
   );
 }
